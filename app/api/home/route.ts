@@ -14,14 +14,16 @@ function validateFeedData(data: any): string | null {
     return 'Missing or invalid field: title';
   }
 
-  // Additional validation checks can be added here
+  // Additional validation checks can be added here, like jobType, status, etc.
   return null;
 }
 
+// GET all feeds
 export async function GET() {
   try {
     initFirebaseAdminSDK();
     const db = getFirestore();
+
     const feedsRef = collection(db, 'feeds');
     const snapshot = await getDocs(feedsRef);
 
@@ -36,6 +38,7 @@ export async function GET() {
   }
 }
 
+// POST (create) a feed
 export async function POST(request: NextRequest) {
   try {
     initFirebaseAdminSDK();
@@ -64,6 +67,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT (update) a feed
 export async function PUT(request: NextRequest) {
   try {
     initFirebaseAdminSDK();
@@ -95,6 +99,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// DELETE a feed
 export async function DELETE(request: NextRequest) {
   try {
     initFirebaseAdminSDK();
