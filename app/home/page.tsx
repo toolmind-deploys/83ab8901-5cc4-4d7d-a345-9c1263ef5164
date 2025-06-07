@@ -18,8 +18,9 @@ async function fetchFeeds() {
 }
 
 export default async function HomePage() {
-  // Since this is a server component, we can fetch data directly.
+  // Since this is a server component, we can fetch data directly on the server.
   let feeds: any[] = [];
+
   try {
     feeds = await fetchFeeds();
   } catch (error) {
