@@ -15,5 +15,5 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  return NextResponse.json(feeds);
+  return NextResponse.json({ feeds });
 }
