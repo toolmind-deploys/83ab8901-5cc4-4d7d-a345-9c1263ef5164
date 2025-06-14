@@ -1,27 +1,30 @@
-import { getFirestore } from 'firebase-admin/firestore';
-import { initFirebaseAdminSDK } from '@/config/firebase-admin-config';
+import React from "react";
 
 export default async function FeedsPage() {
-    const db = getFirestore(initFirebaseAdminSDK());
-
-    // Fetch documents from the 'feeds' collection
-    const snapshot = await db.collection('feeds').get();
-    const feeds = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() };
+    const response = await fetch("http://localhost:3000/api/feeds", {
+        cache: "no-store"
     });
+    const feeds = await response.json();
 
     return (
-        <div className="p-4">
-            <h1 className="text-xl font-bold mb-4">Feeds</h1>
-            <ul className="space-y-2">
-                {feeds.map(feed => (
-                    <li key={feed.id} className="border p-2 rounded">
-                        <p className="font-semibold">{feed.title}</p>
-                        <p className="text-gray-600">Company: {feed.company}</p>
-                        <p><small>Status: {feed.status}</small></p>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <main className="p-4">
+            <h1 className="text-2xl font-bold">Feeds</h1>
+            <section className="mt-4 space-y-4">
+                {feeds && feeds.length > 0 ? (
+                    feeds.map((feed: any) => (
+                        <article key={feed.id} className="border p-2 rounded">
+                            <h2 className="font-semibold">{feed.title}</h2>
+                            <p>Status: {feed.status}</p>
+                            <p>Company: {feed.company}</p>
+                            <p>Job Type: {feed.jobType}</p>
+                            <p>Created At: {new Date(feed.createdAt).toLocaleString()}</p>
+                            <p>Description: {feed.description}</p>
+                        </article>
+                    ))
+                ) : (
+                    <p>No feeds found.</p>
+                )}
+            </section>
+        </main>
     );
 }
