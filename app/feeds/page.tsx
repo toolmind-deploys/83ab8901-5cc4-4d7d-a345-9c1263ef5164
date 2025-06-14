@@ -1,30 +1,27 @@
-import React from 'react';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initFirebaseAdminSDK } from '@/config/firebase-admin-config';
 
 export default async function FeedsPage() {
-  const response = await fetch('http://localhost:3000/api/feeds', {
-    cache: 'no-store',
-  });
+    const db = getFirestore(initFirebaseAdminSDK());
 
-  const data = await response.json();
-  const feeds = data.feeds || [];
+    // Fetch documents from the 'feeds' collection
+    const snapshot = await db.collection('feeds').get();
+    const feeds = snapshot.docs.map(doc => {
+        return { id: doc.id, ...doc.data() };
+    });
 
-  return (
-    <main className="p-4">
-      <h1 className="text-xl font-bold mb-4">Feeds</h1>
-      {feeds.length === 0 ? (
-        <p>No feeds found.</p>
-      ) : (
-        <ul className="space-y-4">
-          {feeds.map((feed: any) => (
-            <li key={feed.id} className="border rounded p-4">
-              <h2 className="font-semibold">{feed.title}</h2>
-              <p>Company: {feed.company}</p>
-              <p>Job Type: {feed.jobType}</p>
-              <p>Status: {feed.status}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
-  );
+    return (
+        <div className="p-4">
+            <h1 className="text-xl font-bold mb-4">Feeds</h1>
+            <ul className="space-y-2">
+                {feeds.map(feed => (
+                    <li key={feed.id} className="border p-2 rounded">
+                        <p className="font-semibold">{feed.title}</p>
+                        <p className="text-gray-600">Company: {feed.company}</p>
+                        <p><small>Status: {feed.status}</small></p>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
