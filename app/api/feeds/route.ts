@@ -1,19 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { firestore } from 'firebase-admin';
 import { initFirebaseAdminSDK } from '@/config/firebase-admin-config';
-import { getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  initFirebaseAdminSDK();
+initFirebaseAdminSDK();
+const fsdb = firestore();
 
-  const db = getFirestore();
-  const snapshot = await db.collection('feeds').get();
-  const feeds = snapshot.docs.map((doc) => {
-    return {
-      id: doc.id,
-      ...doc.data()
-    };
-  });
+export async function GET(req: NextRequest) {
+    try {
+        const snapshot = await fsdb.collection('feeds').get();
 
-  return NextResponse.json({ feeds });
+        const data = snapshot.docs.map(doc => {
+          return { id: doc.id, ...doc.data() };
+        });
+
+        return NextResponse.json({ feeds: data });
+    } catch (error: any) {
+        return NextResponse.json({ status: 500, error: error.message });
+    }
 }
